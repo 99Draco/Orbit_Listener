@@ -7,7 +7,10 @@ Imports System.Text
 Imports System.Data.SqlTypes
 
 Module Program
+    Private afterFinish As Integer = 0
+    Private Finish As Boolean = False
     Sub Main(args As String())
+        'TCP Listener
         Dim server As TcpListener
         server = Nothing
         Try
@@ -42,15 +45,29 @@ Module Program
                     Console.WriteLine("Received: {0}", data)
                     ' Hier hast du den empfangenen string data
                     If data.Contains("$F") Then
-                        Console.WriteLine("F {0}", data)
+                        Dim message As String = "status:" + split_komma(data)
+                        Console.WriteLine(message)
+                        Loxonde_sender(message)
+                        If split_komma(data) = "Finish" Then
+                            Finish = True
+                        Else
+                            Finish = False
+                        End If
                     ElseIf data.Contains("$J") Then
-                        Console.WriteLine("J {0}", data)
+                        If Finish Then
+                            afterFinish += 1
+                            Dim message As String = "count:" + afterFinish
+                            Console.WriteLine(message)
+                            Loxonde_sender(message)
+                        End If
+                    ElseIf data.Contains("$B") Then
+                        afterFinish = 0
+                        Finish = False
                     End If
                     'Anschlieﬂend  gibst du die antwort:
                     data = data
                     Dim msg As Byte() = System.Text.Encoding.ASCII.GetBytes(data)
                     stream.Write(msg, 0, msg.Length)
-                    Console.WriteLine("Sent: {0}", data)
                     i = stream.Read(bytes, 0, bytes.Length)
                 End While
                 ' Shutdown and end connection
@@ -64,4 +81,24 @@ Module Program
         Console.WriteLine(ControlChars.Cr + "Hit enter to continue....")
         Console.Read()
     End Sub
+
+    Sub Loxonde_sender(ByVal strMessage As String)
+        Dim client As New UdpClient()
+        Dim ip As New IPEndPoint(IPAddress.Parse("192.168.1.109"), 1234)
+        Try
+            Dim bytSent As Byte() = Encoding.ASCII.GetBytes(strMessage)
+            client.Send(bytSent, bytSent.Length, ip)
+            client.Close()
+
+        Catch e As Exception
+
+            Console.WriteLine(e.ToString())
+        End Try
+    End Sub
+
+    Function split_komma(ByVal str As String) As String
+        Dim ar As Array = str.Split(", ")
+        Return ar(ar.Length - 1)
+    End Function
+
 End Module
