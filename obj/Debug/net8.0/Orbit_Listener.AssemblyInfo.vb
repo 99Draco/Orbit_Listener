@@ -16,7 +16,7 @@ Imports System.Reflection
 <Assembly: System.Reflection.AssemblyCompanyAttribute("Orbit_Listener"),  _
  Assembly: System.Reflection.AssemblyConfigurationAttribute("Debug"),  _
  Assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0"),  _
- Assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+739f8c3b6193881ff671cc8ede51e4f0f567ec1d"),  _
+ Assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+389f356f01bfcb1524e3f3d100291e4c7fc67dd2"),  _
  Assembly: System.Reflection.AssemblyProductAttribute("Orbit_Listener"),  _
  Assembly: System.Reflection.AssemblyTitleAttribute("Orbit_Listener"),  _
  Assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")> 
