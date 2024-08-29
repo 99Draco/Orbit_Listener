@@ -9,26 +9,30 @@ Imports System.Data.SqlTypes
 Module Program
     Private afterFinish As Integer = 0
     Private Finish As Boolean = False
+
+    'IP und Port Orbit
+    Private orbitIP As IPAddress
+    Private orbitPort As Int32
+
+    'IP und Ports Loxone
+    Private loxoneIP As IPAddress
+    Private loxoneFlagPort As Int32
+    Private loxoneCountPort As Int32
     Sub Main(args As String())
+        init()
         'TCP Listener
         Dim server As TcpListener
         server = Nothing
         Try
-            ' Set the TcpListener on port 13000.
-            Dim port As Int32 = 5000
-            Dim localAddr As IPAddress = IPAddress.Parse("192.168.1.109")
-            server = New TcpListener(localAddr, port)
+
+            server = New TcpListener(orbitIP, orbitPort)
             ' Start listening for client requests.
             server.Start()
             ' Buffer for reading data
             Dim bytes(1024) As Byte
             Dim data As String = Nothing
             ' Enter the listening loop.
-            Console.WriteLine("Locale IP-Adresse: {0}", localAddr)
-            Console.WriteLine("Listening Port: {0}", port)
-            Console.Write("Waiting for a connection... ")
             Dim client As TcpClient = server.AcceptTcpClient()
-            Console.WriteLine("Connected!")
             While True
                 ' Perform a blocking call to accept requests.
                 ' You could also user server.AcceptSocket() here.
@@ -47,7 +51,7 @@ Module Program
                     If data.Contains("$F") Then
                         Dim message As String = "status:" + split_komma(data)
                         Console.WriteLine(message)
-                        Loxonde_sender(message)
+                        Loxonde_sender(message, loxoneFlagPort)
                         If split_komma(data) = "Finish" Then
                             Finish = True
                         Else
@@ -56,9 +60,9 @@ Module Program
                     ElseIf data.Contains("$J") Then
                         If Finish Then
                             afterFinish += 1
-                            Dim message As String = "count:" + afterFinish
+                            Dim message As String = "count:" & afterFinish
                             Console.WriteLine(message)
-                            Loxonde_sender(message)
+                            Loxonde_sender(message, loxoneCountPort)
                         End If
                     ElseIf data.Contains("$B") Then
                         afterFinish = 0
@@ -82,9 +86,9 @@ Module Program
         Console.Read()
     End Sub
 
-    Sub Loxonde_sender(ByVal strMessage As String)
+    Sub Loxonde_sender(ByVal strMessage As String, ByVal port As Int32)
         Dim client As New UdpClient()
-        Dim ip As New IPEndPoint(IPAddress.Parse("192.168.1.109"), 1234)
+        Dim ip As New IPEndPoint(loxoneIP, port)
         Try
             Dim bytSent As Byte() = Encoding.ASCII.GetBytes(strMessage)
             client.Send(bytSent, bytSent.Length, ip)
@@ -100,5 +104,18 @@ Module Program
         Dim ar As Array = str.Split(", ")
         Return ar(ar.Length - 1)
     End Function
+
+    Sub init()
+        Console.WriteLine("IP-Adresse Orbit: ")
+        orbitIP = IPAddress.Parse(Console.ReadLine())
+        Console.WriteLine("Port Orbit: ")
+        orbitPort = Console.ReadLine
+        Console.WriteLine("IP-Adresse Loxone: ")
+        loxoneIP = IPAddress.Parse(Console.ReadLine)
+        Console.WriteLine("Loxone Flag Port: ")
+        loxoneFlagPort = Console.ReadLine
+        Console.WriteLine("Loxone Count Port: ")
+        loxoneCountPort = Console.ReadLine
+    End Sub
 
 End Module
