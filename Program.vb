@@ -5,6 +5,9 @@ Imports System.Net
 Imports System.Net.Sockets
 Imports System.Text
 Imports System.Data.SqlTypes
+Imports System.Net.Http
+Imports System.Reflection.Metadata.Ecma335
+Imports System.Runtime.InteropServices.JavaScript.JSType
 
 Module Program
     Private afterFinish As Integer = 0
@@ -18,69 +21,61 @@ Module Program
     Private loxoneIP As IPAddress
     Private loxoneFlagPort As Int32
     Private loxoneCountPort As Int32
+
+    'TCP Variabeln
+    Private stream As NetworkStream
+    Private streamw As StreamWriter
+    Private streamr As StreamReader
+    Private Client As New System.Net.Sockets.TcpClient
+
     Sub Main(args As String())
         init()
         'TCP Listener
-        Dim server As TcpListener
-        server = Nothing
         Try
+            Client.Connect(orbitIP, orbitPort)
 
-            server = New TcpListener(orbitIP, orbitPort)
-            ' Start listening for client requests.
-            server.Start()
-            ' Buffer for reading data
-            Dim bytes(1024) As Byte
             Dim data As String = Nothing
-            ' Enter the listening loop.
-            Dim client As TcpClient = server.AcceptTcpClient()
-            While True
-                ' Perform a blocking call to accept requests.
-                ' You could also user server.AcceptSocket() here.
-                client = server.AcceptTcpClient()
-                data = Nothing
-                ' Get a stream object for reading and writing
-                Dim stream As NetworkStream = client.GetStream()
-                Dim i As Int32
-                ' Loop to receive all the data sent by the client.
-                i = stream.Read(bytes, 0, bytes.Length)
-                While (i <> 0)
-                    ' Translate data bytes to a ASCII string.
-                    data = System.Text.Encoding.ASCII.GetString(bytes, 0, i)
-                    Console.WriteLine("Received: {0}", data)
-                    ' Hier hast du den empfangenen string data
-                    If data.Contains("$F") Then
-                        Dim message As String = "status:" + split_komma(data)
-                        Console.WriteLine(message)
-                        Loxonde_sender(message, loxoneFlagPort)
-                        If split_komma(data) = "Finish" Then
-                            Finish = True
-                        Else
-                            Finish = False
-                        End If
-                    ElseIf data.Contains("$J") Then
-                        If Finish Then
-                            afterFinish += 1
-                            Dim message As String = "count:" & afterFinish
-                            Console.WriteLine(message)
-                            Loxonde_sender(message, loxoneCountPort)
-                        End If
-                    ElseIf data.Contains("$B") Then
-                        afterFinish = 0
+            If Client.Connected Then
+
+                Deklare_Streams()
+
+
+
+                'login() ' Sub Login
+            End If
+            If Client.Connected Then
+                streamw.WriteLine("Test")
+                Deklare_Streams()
+                login()
+                data = client_recieve()
+                Console.WriteLine(data)
+                If data.Contains("$F") Then
+                    Dim message As String = "status:" + split_komma(data)
+                    Console.WriteLine(message)
+                    Loxonde_sender(message, loxoneFlagPort)
+                    If split_komma(data) = "Finish" Then
+                        Finish = True
+                    Else
                         Finish = False
                     End If
-                    'Anschlieﬂend  gibst du die antwort:
-                    data = data
-                    Dim msg As Byte() = System.Text.Encoding.ASCII.GetBytes(data)
-                    stream.Write(msg, 0, msg.Length)
-                    i = stream.Read(bytes, 0, bytes.Length)
-                End While
-                ' Shutdown and end connection
-                client.Close()
-            End While
+                ElseIf data.Contains("$J") Then
+                    If Finish Then
+                        afterFinish += 1
+                        Dim message As String = "count:" & afterFinish
+                        Console.WriteLine(message)
+                        Loxonde_sender(message, loxoneCountPort)
+                    End If
+                ElseIf data.Contains("$B") Then
+                    afterFinish = 0
+                    Finish = False
+                End If
+            End If
+            ' Shutdown and end connection
+            Client.Close()
         Catch e As SocketException
             Console.WriteLine("SocketException: {0}", e)
         Finally
-            server.Stop()
+            Client.Close()
         End Try
         Console.WriteLine(ControlChars.Cr + "Hit enter to continue....")
         Console.Read()
@@ -118,4 +113,54 @@ Module Program
         loxoneCountPort = Console.ReadLine
     End Sub
 
+    Sub Deklare_Streams()
+        stream = Client.GetStream                      ' Stream wird auf Client 
+        ' verwiesen
+        streamw = New StreamWriter(stream)      ' Stream zum Senden wird 
+        ' deklariert
+        streamr = New StreamReader(stream)      ' Stream zum Empfangen wird 
+        ' deklariert
+    End Sub
+
+    Sub login()
+        Try
+            'Hier kann man jetzt empfangen wie man will.
+            'Auch die reinfolge ist egal.
+            'Ich benutzte hier 1 mal senden, einmal empfangen und dann wieder 
+            ' von vorne...
+            'Man kann aber auch 2 mal Empfangen und 2 mal Senden nehmen 
+            ' oder...... wies einem so bekommt^^
+            'client_send("onl ") '&  loginname)
+            '            client_send(TBox_Senden.Text)
+
+            Dim Zum_Senden(4) As String
+            Zum_Senden = {"0x7c", "0x04", "0x00", "0x00"}
+            For i As Integer = 0 To 3
+                client_send(Zum_Senden(i))
+                streamw.Flush()
+            Next
+
+
+            MsgBox("client_recieve() = " & client_recieve())
+            Client.Close() ' Nichts einfacher als das
+
+
+        Catch
+            ' Hier kann man eine Error Message ausgeben oder eine Automatische 
+            ' Fehlerbehebung machen,....
+            ' Verbindung beenden
+            Client.Close() ' Nichts einfacher als das
+
+            MsgBox("Fehlernr.: " & Err.Number & "   " & Err.Description)
+        End Try
+    End Sub
+
+    Sub client_send(ByVal text As String)
+        streamw.WriteLine(text)
+
+        'streamw.Flush()
+    End Sub
+    Function client_recieve() As String
+        client_recieve = streamr.ReadLine
+    End Function
 End Module

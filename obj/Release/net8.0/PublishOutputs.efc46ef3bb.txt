@@ -1,0 +1,5 @@
+C:\Users\phil\GitHub\Orbit_Listener\bin\Release\net8.0\app.publish\Orbit_Listener.exe
+C:\Users\phil\GitHub\Orbit_Listener\bin\Release\net8.0\app.publish\Orbit_Listener.dll
+C:\Users\phil\GitHub\Orbit_Listener\bin\Release\net8.0\app.publish\Orbit_Listener.deps.json
+C:\Users\phil\GitHub\Orbit_Listener\bin\Release\net8.0\app.publish\Orbit_Listener.runtimeconfig.json
+C:\Users\phil\GitHub\Orbit_Listener\bin\Release\net8.0\app.publish\Orbit_Listener.pdb

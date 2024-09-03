@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <asmv1:assemblyIdentity name="Orbit_Listener.exe" version="1.0.0.2" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
+  <asmv1:assemblyIdentity name="Orbit_Listener.exe" version="1.0.0.3" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
   <application />
   <entryPoint>
     <assemblyIdentity name="Launcher" version="8.0.0.0" language="neutral" processorArchitecture="msil" />
@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Launcher.exe" size="17344">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Launcher.exe" size="16384">
       <assemblyIdentity name="Launcher" version="8.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>UanV8E6eBfT31ZzuyMKbH1jNP0ic9TZUVFgdhrqqT1U=</dsig:DigestValue>
+        <dsig:DigestValue>mmuNbu6iRhBnsEkjsERk1k/JrGsEECu9EvkmAdgHUb0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -62,22 +62,22 @@
       <dsig:DigestValue>V6sEJjjUnYA6JQ86ISaRJccGUqXvJRa3FLRZDu+24FI=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Orbit_Listener.dll" size="8128">
+  <file name="Orbit_Listener.dll" size="7168">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>/P+O4sP9f3ODZNY4hEYgtSZ2jAyV/LK5SprxqP8he/k=</dsig:DigestValue>
+      <dsig:DigestValue>P1n+DSpEn/rhYqe5TZG2sHfQkpMtgqyxvU4QjTwpHmE=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Orbit_Listener.exe" size="139712">
+  <file name="Orbit_Listener.exe" size="142848">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>gwMTV0ScZiBf3A8+xmNlURci0CGMGukJssZUyBrMMtw=</dsig:DigestValue>
+      <dsig:DigestValue>9Il32l7HKvsuMAp3pS6E4mpKVci1y2SXn4MXqSmm/J0=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Orbit_Listener.runtimeconfig.json" size="340">
