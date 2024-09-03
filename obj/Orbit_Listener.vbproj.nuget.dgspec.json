@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\phil\\GitHub\\Orbit_Listener\\Orbit_Listener.vbproj": {}
+    "C:\\GitHub\\Orbit_Listener\\Orbit_Listener.vbproj": {}
   },
   "projects": {
-    "C:\\Users\\phil\\GitHub\\Orbit_Listener\\Orbit_Listener.vbproj": {
+    "C:\\GitHub\\Orbit_Listener\\Orbit_Listener.vbproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\phil\\GitHub\\Orbit_Listener\\Orbit_Listener.vbproj",
+        "projectUniqueName": "C:\\GitHub\\Orbit_Listener\\Orbit_Listener.vbproj",
         "projectName": "Orbit_Listener",
-        "projectPath": "C:\\Users\\phil\\GitHub\\Orbit_Listener\\Orbit_Listener.vbproj",
-        "packagesPath": "C:\\Users\\phil\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\phil\\GitHub\\Orbit_Listener\\obj\\",
+        "projectPath": "C:\\GitHub\\Orbit_Listener\\Orbit_Listener.vbproj",
+        "packagesPath": "C:\\Users\\philh\\.nuget\\packages\\",
+        "outputPath": "C:\\GitHub\\Orbit_Listener\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\phil\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\philh\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -65,7 +65,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

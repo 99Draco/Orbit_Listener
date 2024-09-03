@@ -1,89 +1,55 @@
-Imports System
-Imports System.Linq.Expressions
-Imports System.IO
 Imports System.Net
 Imports System.Net.Sockets
 Imports System.Text
-Imports System.Data.SqlTypes
-Imports System.Net.Http
-Imports System.Reflection.Metadata.Ecma335
-Imports System.Runtime.InteropServices.JavaScript.JSType
+Imports System.IO
+Imports System.Threading
+Imports System.Security.Cryptography
 
 Module Program
     Private afterFinish As Integer = 0
     Private Finish As Boolean = False
 
     'IP und Port Orbit
-    Private orbitIP As IPAddress
-    Private orbitPort As Int32
+    Private orbitIP As String = "192.168.1.109"
+    Private orbitPort As Int32 = 50000
 
     'IP und Ports Loxone
-    Private loxoneIP As IPAddress
-    Private loxoneFlagPort As Int32
-    Private loxoneCountPort As Int32
+    Private loxoneIP As IPAddress = IPAddress.Parse("192.168.1.109")
+    Private loxoneFlagPort As Int32 = 1234
+    Private loxoneCountPort As Int32 = 12345
 
     'TCP Variabeln
-    Private stream As NetworkStream
-    Private streamw As StreamWriter
-    Private streamr As StreamReader
-    Private Client As New System.Net.Sockets.TcpClient
-
+    Private TcpClientReceiverThread As New Threading.Thread(AddressOf ClientReceiverThread)
+    Private exiting As Boolean = True
     Sub Main(args As String())
-        init()
+        'init()
+        TcpClientReceiverThread.IsBackground = True
+        TcpClientReceiverThread.Start()
         'TCP Listener
-        Try
-            Client.Connect(orbitIP, orbitPort)
+        Do While exiting
 
-            Dim data As String = Nothing
-            If Client.Connected Then
-
-                Deklare_Streams()
-
-
-
-                'login() ' Sub Login
-            End If
-            If Client.Connected Then
-                streamw.WriteLine("Test")
-                Deklare_Streams()
-                login()
-                data = client_recieve()
-                Console.WriteLine(data)
-                If data.Contains("$F") Then
-                    Dim message As String = "status:" + split_komma(data)
-                    Console.WriteLine(message)
-                    Loxonde_sender(message, loxoneFlagPort)
-                    If split_komma(data) = "Finish" Then
-                        Finish = True
-                    Else
-                        Finish = False
-                    End If
-                ElseIf data.Contains("$J") Then
-                    If Finish Then
-                        afterFinish += 1
-                        Dim message As String = "count:" & afterFinish
-                        Console.WriteLine(message)
-                        Loxonde_sender(message, loxoneCountPort)
-                    End If
-                ElseIf data.Contains("$B") Then
-                    afterFinish = 0
-                    Finish = False
-                End If
-            End If
-            ' Shutdown and end connection
-            Client.Close()
-        Catch e As SocketException
-            Console.WriteLine("SocketException: {0}", e)
-        Finally
-            Client.Close()
-        End Try
-        Console.WriteLine(ControlChars.Cr + "Hit enter to continue....")
-        Console.Read()
+        Loop
     End Sub
 
-    Sub Loxonde_sender(ByVal strMessage As String, ByVal port As Int32)
+    Sub init()
+        Console.WriteLine("IP-Adresse Orbit: ")
+        orbitIP = Console.ReadLine
+        Console.WriteLine("Port Orbit: ")
+        orbitPort = Console.ReadLine
+        Console.WriteLine("IP-Adresse Loxone: ")
+        loxoneIP = IPAddress.Parse(Console.ReadLine)
+        Console.WriteLine("Loxone Flag Port: ")
+        loxoneFlagPort = Console.ReadLine
+        Console.WriteLine("Loxone Count Port: ")
+        loxoneCountPort = Console.ReadLine
+    End Sub
+    Private Function split_komma(ByVal str As String) As String
+        Dim ar As Array = str.Split(", ")
+        Return ar(ar.Length - 1)
+    End Function
+    Sub Loxonde_sender(ByVal strMessage As String)
         Dim client As New UdpClient()
-        Dim ip As New IPEndPoint(loxoneIP, port)
+        Dim ip As New IPEndPoint(IPAddress.Parse("192.168.1.109"), 1234)
         Try
             Dim bytSent As Byte() = Encoding.ASCII.GetBytes(strMessage)
             client.Send(bytSent, bytSent.Length, ip)
@@ -94,73 +60,84 @@ Module Program
             Console.WriteLine(e.ToString())
         End Try
     End Sub
+    Private Sub ClientReceiverThread()
+        Dim client As New TcpClient
 
-    Function split_komma(ByVal str As String) As String
-        Dim ar As Array = str.Split(", ")
-        Return ar(ar.Length - 1)
-    End Function
+        Dim bLen(3) As Byte  'the len of the message being sent or received
+        Dim outData(100) As Byte
 
-    Sub init()
-        Console.WriteLine("IP-Adresse Orbit: ")
-        orbitIP = IPAddress.Parse(Console.ReadLine())
-        Console.WriteLine("Port Orbit: ")
-        orbitPort = Console.ReadLine
-        Console.WriteLine("IP-Adresse Loxone: ")
-        loxoneIP = IPAddress.Parse(Console.ReadLine)
-        Console.WriteLine("Loxone Flag Port: ")
-        loxoneFlagPort = Console.ReadLine
-        Console.WriteLine("Loxone Count Port: ")
-        loxoneCountPort = Console.ReadLine
+        Dim iLen As Int32
+        Dim rand As New Random
+
+        'some random data to send from
+        For i As Integer = 0 To 100
+            outData(i) = CByte(rand.Next(1, 255))
+        Next
+
+        'Do While orbitPort = 50000    'Wait for Server to tell us what port to connect to
+        'Thread.Sleep(100)
+        ' Loop
+
+        client.Connect(IPAddress.Parse(orbitIP), orbitPort)
+
+        If client.Connected Then
+
+            Dim nStream As NetworkStream = client.GetStream
+
+            Try
+                'Send a message to the server to get things started.
+                iLen = rand.Next(10, 100)                    'choose to send 10 to 100 bytes to the server
+                bLen = BitConverter.GetBytes(iLen)           'convert length to four bytes
+                nStream.Write(bLen, 0, 4)                    'send length out first
+                nStream.Write(outData, 0, iLen)              'followed by the data
+                Console.WriteLine("Client sent the first message to kick things off. Sent {0} bytes", iLen)
+
+                Dim cnt As Integer
+                Do While exiting
+                    If nStream.CanRead Then
+                        cnt = nStream.Read(bLen, 0, 4)
+                        Dim inData(100) As Byte
+                        iLen = nStream.Read(inData, 0, iLen)
+                        Dim daten As String = Encoding.ASCII.GetString(inData)
+                        Console.WriteLine(daten)
+                        If daten.Contains("$F") Then
+                            Console.WriteLine("F {0}", daten)
+                            Dim message As String = "status:" + split_komma(daten)
+                            Console.WriteLine(message)
+                            Loxonde_sender(message)
+                            If split_komma(daten) = "Finish" Then
+                                Finish = True
+                            Else
+                                Finish = False
+                            End If
+                        ElseIf daten.Contains("$J") Then
+                            Console.WriteLine("J {0}", daten)
+                            If Finish Then
+                                afterFinish += 1
+                                Dim message As String = "count:" + afterFinish
+                                Console.WriteLine(message)
+                                Loxonde_sender(message)
+                            End If
+                        ElseIf daten.Contains("$B") Then
+                            afterFinish = 0
+                            Finish = False
+                        End If
+                        iLen = rand.Next(10, 100)                    'choose to send 10 to 100 bytes the other direction
+                        bLen = BitConverter.GetBytes(iLen)           'convert length to four bytes
+                        nStream.Write(bLen, 0, 4)                    'send length out first
+                        nStream.Write(outData, 0, iLen)
+                    End If
+                Loop
+            Catch ex As Exception                               'If we get an exception at any point in the process (usually a connection lost or closed)
+            Finally
+                If nStream IsNot Nothing Then nStream.Dispose()
+                If client IsNot Nothing Then client.Close()
+            End Try
+
+            client = Nothing
+        Else
+            Console.WriteLine("Client didn't connect. Example busted")
+        End If
+        exiting = True
     End Sub
-
-    Sub Deklare_Streams()
-        stream = Client.GetStream                      ' Stream wird auf Client 
-        ' verwiesen
-        streamw = New StreamWriter(stream)      ' Stream zum Senden wird 
-        ' deklariert
-        streamr = New StreamReader(stream)      ' Stream zum Empfangen wird 
-        ' deklariert
-    End Sub
-
-    Sub login()
-        Try
-            'Hier kann man jetzt empfangen wie man will.
-            'Auch die reinfolge ist egal.
-            'Ich benutzte hier 1 mal senden, einmal empfangen und dann wieder 
-            ' von vorne...
-            'Man kann aber auch 2 mal Empfangen und 2 mal Senden nehmen 
-            ' oder...... wies einem so bekommt^^
-            'client_send("onl ") '&  loginname)
-            '            client_send(TBox_Senden.Text)
-
-            Dim Zum_Senden(4) As String
-            Zum_Senden = {"0x7c", "0x04", "0x00", "0x00"}
-            For i As Integer = 0 To 3
-                client_send(Zum_Senden(i))
-                streamw.Flush()
-            Next
-
-
-            MsgBox("client_recieve() = " & client_recieve())
-            Client.Close() ' Nichts einfacher als das
-
-
-        Catch
-            ' Hier kann man eine Error Message ausgeben oder eine Automatische 
-            ' Fehlerbehebung machen,....
-            ' Verbindung beenden
-            Client.Close() ' Nichts einfacher als das
-
-            MsgBox("Fehlernr.: " & Err.Number & "   " & Err.Description)
-        End Try
-    End Sub
-
-    Sub client_send(ByVal text As String)
-        streamw.WriteLine(text)
-
-        'streamw.Flush()
-    End Sub
-    Function client_recieve() As String
-        client_recieve = streamr.ReadLine
-    End Function
 End Module
