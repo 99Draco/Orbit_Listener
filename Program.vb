@@ -10,19 +10,18 @@ Module Program
     Private Finish As Boolean = False
 
     'IP und Port Orbit
-    Private orbitIP As String = "192.168.1.109"
+    Private orbitIP As String
     Private orbitPort As Int32 = 50000
 
     'IP und Ports Loxone
-    Private loxoneIP As IPAddress = IPAddress.Parse("192.168.1.109")
-    Private loxoneFlagPort As Int32 = 1234
-    Private loxoneCountPort As Int32 = 12345
+    Private loxoneIP As IPAddress
+    Private loxonePort As Int32 = 1234
 
     'TCP Variabeln
     Private TcpClientReceiverThread As New Threading.Thread(AddressOf ClientReceiverThread)
     Private exiting As Boolean = True
     Sub Main(args As String())
-        'init()
+        init()
         TcpClientReceiverThread.IsBackground = True
         TcpClientReceiverThread.Start()
         'TCP Listener
@@ -38,21 +37,19 @@ Module Program
         orbitPort = Console.ReadLine
         Console.WriteLine("IP-Adresse Loxone: ")
         loxoneIP = IPAddress.Parse(Console.ReadLine)
-        Console.WriteLine("Loxone Flag Port: ")
-        loxoneFlagPort = Console.ReadLine
-        Console.WriteLine("Loxone Count Port: ")
-        loxoneCountPort = Console.ReadLine
+        Console.WriteLine("Loxone Port: ")
+        loxonePort = Console.ReadLine
     End Sub
     Private Function split_komma(ByVal str As String) As String
-        Dim ar As Array = str.Split(", ")
+        Dim ar As Array = str.Split(",")
         Return ar(ar.Length - 1)
     End Function
     Sub Loxonde_sender(ByVal strMessage As String)
         Dim client As New UdpClient()
-        Dim ip As New IPEndPoint(IPAddress.Parse("192.168.1.109"), 1234)
+        Dim ip As New IPEndPoint(loxoneIP, loxonePort)
         Try
             Dim bytSent As Byte() = Encoding.ASCII.GetBytes(strMessage)
-            client.Send(bytSent, bytSent.Length, ip)
+            client.Send(bytSent, ip)
             client.Close()
 
         Catch e As Exception
@@ -114,7 +111,7 @@ Module Program
                             Console.WriteLine("J {0}", daten)
                             If Finish Then
                                 afterFinish += 1
-                                Dim message As String = "count:" + afterFinish
+                                Dim message As String = "count: " + afterFinish
                                 Console.WriteLine(message)
                                 Loxonde_sender(message)
                             End If
