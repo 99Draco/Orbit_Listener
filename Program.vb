@@ -4,6 +4,8 @@ Imports System.Text
 Imports System.IO
 Imports System.Threading
 Imports System.Security.Cryptography
+Imports System.Runtime.InteropServices
+Imports System.Runtime.InteropServices.Marshalling
 
 Module Program
     Private afterFinish As Integer = 0
@@ -57,84 +59,54 @@ Module Program
             Console.WriteLine(e.ToString())
         End Try
     End Sub
-    Private Sub ClientReceiverThread()
-        Dim client As New TcpClient
+    Private Async Sub ClientReceiverThread()
+        Try
 
-        Dim bLen(3) As Byte  'the len of the message being sent or received
-        Dim outData(100) As Byte
+            Dim client As New TcpClient(orbitIP, orbitPort)
 
-        Dim iLen As Int32
-        Dim rand As New Random
+            Dim data As Byte() = System.Text.Encoding.ASCII.GetBytes("conect")
 
-        'some random data to send from
-        For i As Integer = 0 To 100
-            outData(i) = CByte(rand.Next(1, 255))
-        Next
+            Dim stream As NetworkStream = client.GetStream
 
-        'Do While orbitPort = 50000    'Wait for Server to tell us what port to connect to
-        'Thread.Sleep(100)
-        ' Loop
+            stream.Write(data, 0, data.Length)
 
-        client.Connect(IPAddress.Parse(orbitIP), orbitPort)
+            data = New Byte(256) {}
 
-        If client.Connected Then
+            Dim responseData As String = String.Empty
 
-            Dim nStream As NetworkStream = client.GetStream
+            Do While exiting
 
-            Try
-                'Send a message to the server to get things started.
-                iLen = rand.Next(10, 100)                    'choose to send 10 to 100 bytes to the server
-                bLen = BitConverter.GetBytes(iLen)           'convert length to four bytes
-                nStream.Write(bLen, 0, 4)                    'send length out first
-                nStream.Write(outData, 0, iLen)              'followed by the data
-                Console.WriteLine("Client sent the first message to kick things off. Sent {0} bytes", iLen)
+                Dim bytes As Int32 = stream.Read(data, 0, data.Length)
+                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes)
 
-                Dim cnt As Integer
-                Do While exiting
-                    If nStream.CanRead Then
-                        cnt = nStream.Read(bLen, 0, 4)
-                        Dim inData(100) As Byte
-                        iLen = nStream.Read(inData, 0, iLen)
-                        Dim daten As String = Encoding.ASCII.GetString(inData)
-                        Console.WriteLine(daten)
-                        If daten.Contains("$F") Then
-                            Console.WriteLine("F {0}", daten)
-                            Dim message As String = "status:" + split_komma(daten)
-                            Console.WriteLine(message)
-                            Loxonde_sender(message)
-                            If split_komma(daten) = "Finish" Then
-                                Finish = True
-                            Else
-                                Finish = False
-                            End If
-                        ElseIf daten.Contains("$J") Then
-                            Console.WriteLine("J {0}", daten)
-                            If Finish Then
-                                afterFinish += 1
-                                Dim message As String = "count: " + afterFinish
-                                Console.WriteLine(message)
-                                Loxonde_sender(message)
-                            End If
-                        ElseIf daten.Contains("$B") Then
-                            afterFinish = 0
-                            Finish = False
-                        End If
-                        iLen = rand.Next(10, 100)                    'choose to send 10 to 100 bytes the other direction
-                        bLen = BitConverter.GetBytes(iLen)           'convert length to four bytes
-                        nStream.Write(bLen, 0, 4)                    'send length out first
-                        nStream.Write(outData, 0, iLen)
+                'Console.WriteLine(responseData)
+
+                If responseData.Contains("$F") Then
+                    Console.WriteLine("F {0}", responseData)
+                    Dim message As String = "status:" + split_komma(responseData)
+                    Console.WriteLine(message)
+                    Loxonde_sender(message)
+                    If message.Contains("Finish") Then
+                        Finish = True
+                    Else
+                        Finish = False
                     End If
-                Loop
-            Catch ex As Exception                               'If we get an exception at any point in the process (usually a connection lost or closed)
-            Finally
-                If nStream IsNot Nothing Then nStream.Dispose()
-                If client IsNot Nothing Then client.Close()
-            End Try
-
-            client = Nothing
-        Else
-            Console.WriteLine("Client didn't connect. Example busted")
-        End If
+                ElseIf responseData.Contains("$J") Then
+                    Console.WriteLine("J {0}", responseData)
+                    If Finish = True Then
+                        afterFinish += 1
+                        Dim message As String = "count: " & afterFinish
+                        Console.WriteLine(message)
+                        Loxonde_sender(message)
+                    End If
+                ElseIf responseData.Contains("$B") Then
+                    afterFinish = 0
+                    Finish = False
+                End If
+            Loop
+        Catch ex As Exception                               'If we get an exception at any point in the process (usually a connection lost or closed)
+        Finally
+        End Try
         exiting = True
     End Sub
 End Module
