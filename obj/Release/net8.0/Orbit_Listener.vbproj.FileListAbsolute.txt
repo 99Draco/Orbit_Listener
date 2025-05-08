@@ -32,6 +32,9 @@ C:\Users\phil\GitHub\Orbit_Listener\bin\Release\net8.0\Orbit_Listener.dll.manife
 C:\Users\phil\GitHub\Orbit_Listener\bin\Release\net8.0\Orbit_Listener.application
 C:\Users\phil\GitHub\Orbit_Listener\obj\Release\net8.0\Orbit_Listener.dll.manifest
 C:\Users\phil\GitHub\Orbit_Listener\obj\Release\net8.0\Orbit_Listener.application
+C:\GitHub\Orbit_Listener\obj\Release\net8.0\Orbit_Listener.Resources.resources
+C:\GitHub\Orbit_Listener\obj\Release\net8.0\Orbit_Listener.vbproj.GenerateResource.cache
+C:\GitHub\Orbit_Listener\bin\Release\net8.0\config.txt
 C:\GitHub\Orbit_Listener\bin\Release\net8.0\Orbit_Listener.dll.manifest
 C:\GitHub\Orbit_Listener\bin\Release\net8.0\Orbit_Listener.application
 C:\GitHub\Orbit_Listener\obj\Release\net8.0\Orbit_Listener.dll.manifest

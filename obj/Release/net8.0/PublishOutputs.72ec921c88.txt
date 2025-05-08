@@ -1,3 +1,4 @@
+C:\GitHub\Orbit_Listener\bin\Release\net8.0\app.publish\config.txt
 C:\GitHub\Orbit_Listener\bin\Release\net8.0\app.publish\Orbit_Listener.exe
 C:\GitHub\Orbit_Listener\bin\Release\net8.0\app.publish\Orbit_Listener.dll
 C:\GitHub\Orbit_Listener\bin\Release\net8.0\app.publish\Orbit_Listener.deps.json

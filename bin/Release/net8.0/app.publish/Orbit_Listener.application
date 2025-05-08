@@ -1,21 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xrml="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <assemblyIdentity name="Orbit_Listener.application" version="1.0.0.4" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" xmlns="urn:schemas-microsoft-com:asm.v1" />
+  <assemblyIdentity name="Orbit_Listener.application" version="1.0.0.20" publicKeyToken="bb529d5430409b27" language="neutral" processorArchitecture="msil" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <description asmv2:publisher="Orbit_Listener" asmv2:product="Orbit_Listener" xmlns="urn:schemas-microsoft-com:asm.v1" />
-  <deployment install="true" mapFileExtensions="true" />
+  <deployment install="true" mapFileExtensions="true">
+    <subscription>
+      <update>
+        <beforeApplicationStartup />
+      </update>
+    </subscription>
+    <deploymentProvider codebase="https://github.com/99Draco/Orbit_Listener/blob/1a7056c0ced6d37314fef891c577da961e9f83bb/bin/publish/Orbit_Listener/setup.exe/Orbit_Listener.application" />
+  </deployment>
   <compatibleFrameworks xmlns="urn:schemas-microsoft-com:clickonce.v2">
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="Application Files\Orbit_Listener_1_0_0_4\Orbit_Listener.dll.manifest" size="4742">
-      <assemblyIdentity name="Orbit_Listener.exe" version="1.0.0.4" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
+    <dependentAssembly dependencyType="install" codebase="Application Files\Orbit_Listener_1_0_0_20\Orbit_Listener.dll.manifest" size="8766">
+      <assemblyIdentity name="Orbit_Listener.exe" version="1.0.0.20" publicKeyToken="bb529d5430409b27" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>0LdJ+8oqBHdJ8xeU9OpHKQjLtgttXi4r7fjOS2aE/94=</dsig:DigestValue>
+        <dsig:DigestValue>BmkEg+mTNNgJi3YswsHHpdTwcaA0XohYdsswpSfOoDE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-</asmv1:assembly>
+<publisherIdentity name="CN=PHILS_BOOK\philh" issuerKeyHash="80885bdb74f360833bc814978ca8457be14d568e" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>7WEgqBahze3sb8eJYzfU/mFhwcnjAZdHJYpiA87039w=</DigestValue></Reference></SignedInfo><SignatureValue>1RxosL2ZhA1kR70cHV2W4DDs0jz/3ZaDt2ZWA08muSuHkw7yRtI+BX9igMKsidUrRRVNTkeryJ8S2lkslcZ1s5ru2s90z9FFS6Y4Q/0mWsls67iELN6zP3p7xk/KsnjyDKniTH/UrnyJTwiEcjgrMAygWYZnD0RLrvhEI4jVD1Q=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>86oazTBElZZojs0QSz9jwcCKm4/EYTM/xvea79D808RdQMULg05C8T40TVp6VbSXHbSKwv/RbsvgVj02sbGtp51EIKjaSaHUAc7HUqY85K1aAyzSHnfbB5Do85D7Jn3YxVjwFGF0gwj/rE2E5euyAvawWyFgLSBKACwfKoGRS/E=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="dcdff4ce03628a25479701e3c9c16161fed4376389c76fecedcda116a82061ed" Description="" Url=""><as:assemblyIdentity name="Orbit_Listener.application" version="1.0.0.20" publicKeyToken="bb529d5430409b27" language="neutral" processorArchitecture="msil" xmlns="urn:schemas-microsoft-com:asm.v1" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=PHILS_BOOK\philh</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>gdF7jxDpcjLUT3j0es1pYUHLhVrKtAyodlCCMw2eFKg=</DigestValue></Reference></SignedInfo><SignatureValue>VZCd2XDEPqmSHovxKO6wvoNBpZ6VEIyKoMYcsb6DPqc5oaVRFXIxhRit+5UEPyqACohC1Z9L8xVBeBjfsojVS0k+g3O1wUjDSxlMHeVAZhrUxEooobWR/zwzM7Dr4TATKnplnr5bNZsVyq5WwS3aled0LNwldRt8aZZyGaTIamI=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>86oazTBElZZojs0QSz9jwcCKm4/EYTM/xvea79D808RdQMULg05C8T40TVp6VbSXHbSKwv/RbsvgVj02sbGtp51EIKjaSaHUAc7HUqY85K1aAyzSHnfbB5Do85D7Jn3YxVjwFGF0gwj/rE2E5euyAvawWyFgLSBKACwfKoGRS/E=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIB2TCCAUKgAwIBAgIQHK1+owefSK9F+osecIP6LzANBgkqhkiG9w0BAQsFADArMSkwJwYDVQQDHiAAUABIAEkATABTAF8AQgBPAE8ASwBcAHAAaABpAGwAaDAeFw0yNTA1MDgyMjIzMjhaFw0yNjA1MDkwNDIzMjhaMCsxKTAnBgNVBAMeIABQAEgASQBMAFMAXwBCAE8ATwBLAFwAcABoAGkAbABoMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDzqhrNMESVlmiOzRBLP2PBwIqbj8RhMz/G95rv0PzTxF1AxQuDTkLxPjRNWnpVtJcdtIrC/9Fuy+BWPTaxsa2nnUQgqNpJodQBzsdSpjzkrVoDLNIed9sHkOjzkPsmfdjFWPAUYXSDCP+sTYTl67IC9rBbIWAtIEoALB8qgZFL8QIDAQABMA0GCSqGSIb3DQEBCwUAA4GBAEuFSAjWCN2OZwHixuYzvEKPwQeMAIPMDMSmEDiG7WXw3c3H51+0qfP9qHeSGj9y/IN94OWqLyok/G84FNp1PYo0J6EaW9tcfXKkPODKThSxcUmnVjvBvLtVoQYn9DxOLg7yP09u3Zar7ASvBpuo7rF23uaRbh2yyELvAu7pk5Pe</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>

@@ -5,6 +5,14 @@
     {
       "AbsoluteMoniker": "D:0:0:{6101B686-FD01-4AB8-831D-CE323606EA8C}|Orbit_Listener.vbproj|c:\\github\\orbit_listener\\program.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
       "RelativeMoniker": "D:0:0:{6101B686-FD01-4AB8-831D-CE323606EA8C}|Orbit_Listener.vbproj|solutionrelative:program.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6101B686-FD01-4AB8-831D-CE323606EA8C}|Orbit_Listener.vbproj|c:\\github\\orbit_listener\\config.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{6101B686-FD01-4AB8-831D-CE323606EA8C}|Orbit_Listener.vbproj|solutionrelative:config.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6101B686-FD01-4AB8-831D-CE323606EA8C}|Orbit_Listener.vbproj|c:\\github\\orbit_listener\\orbit_listener.vbproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{6101B686-FD01-4AB8-831D-CE323606EA8C}|Orbit_Listener.vbproj|solutionrelative:orbit_listener.vbproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,8 +22,33 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "config.txt",
+              "DocumentMoniker": "C:\\GitHub\\Orbit_Listener\\config.txt",
+              "RelativeDocumentMoniker": "config.txt",
+              "ToolTip": "C:\\GitHub\\Orbit_Listener\\config.txt",
+              "RelativeToolTip": "config.txt",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2025-05-08T22:37:34.182Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Orbit_Listener",
+              "DocumentMoniker": "C:\\GitHub\\Orbit_Listener\\Orbit_Listener.vbproj",
+              "RelativeDocumentMoniker": "Orbit_Listener.vbproj",
+              "ToolTip": "C:\\GitHub\\Orbit_Listener\\Orbit_Listener.vbproj",
+              "RelativeToolTip": "Orbit_Listener.vbproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003380|",
+              "WhenOpened": "2025-05-08T22:27:24.967Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -24,7 +57,7 @@
               "RelativeDocumentMoniker": "Program.vb",
               "ToolTip": "C:\\GitHub\\Orbit_Listener\\Program.vb",
               "RelativeToolTip": "Program.vb",
-              "ViewState": "AgIAAE0AAAAAAPDC+rQmwGEAAAA7AAAAAAAAAA==",
+              "ViewState": "AgIAAHIAAAAAAAAAAAAQwIUAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
               "WhenOpened": "2024-08-28T14:40:37.239Z",
               "EditorCaption": ""

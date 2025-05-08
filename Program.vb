@@ -6,6 +6,7 @@ Imports System.Threading
 Imports System.Security.Cryptography
 Imports System.Runtime.InteropServices
 Imports System.Runtime.InteropServices.Marshalling
+Imports Microsoft.VisualBasic.FileIO
 
 Module Program
     Private afterFinish As Integer = 0
@@ -33,14 +34,7 @@ Module Program
     End Sub
 
     Sub init()
-        Console.WriteLine("IP-Adresse Orbit: ")
-        orbitIP = Console.ReadLine
-        Console.WriteLine("Port Orbit: ")
-        orbitPort = Console.ReadLine
-        Console.WriteLine("IP-Adresse Loxone: ")
-        loxoneIP = IPAddress.Parse(Console.ReadLine)
-        Console.WriteLine("Loxone Port: ")
-        loxonePort = Console.ReadLine
+        ReadConfig()
     End Sub
     Private Function split_komma(ByVal str As String) As String
         Dim ar As Array = str.Split(",")
@@ -108,5 +102,41 @@ Module Program
         Finally
         End Try
         exiting = True
+    End Sub
+
+    Sub ReadConfig()
+        Dim FilePath As String
+        Dim fileContent As String
+        Dim configLine() As String
+        Dim configDict As Object
+        Dim i As Integer
+
+        FilePath = ".\config.txt"
+
+        fileContent = FileSystem.ReadAllText(FilePath)
+        Console.WriteLine(FileSystem.GetFileInfo(FilePath))
+
+        FileClose(1)
+
+        configLine = Split(fileContent, vbCrLf)
+
+        configDict = CreateObject("Scripting.Dictionary")
+
+        For i = LBound(configLine) To UBound(configLine)
+            Dim keyValue() As String
+            keyValue = Split(configLine(i), "=")
+            If UBound(keyValue) = 1 Then
+                configDict(keyValue(0)) = keyValue(1)
+            End If
+        Next
+
+        Console.WriteLine(configDict("OrbitsIP"))
+        orbitIP = configDict("OrbitsIP")
+        Console.WriteLine(configDict("OrbitsPort"))
+        orbitPort = configDict("OrbitsPort")
+        Console.WriteLine(configDict("LoxoneIP"))
+        loxoneIP = IPAddress.Parse(configDict("LoxoneIP"))
+        Console.WriteLine(configDict("LoxonePort"))
+        loxonePort = configDict("LoxonePort")
     End Sub
 End Module
