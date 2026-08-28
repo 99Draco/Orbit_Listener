@@ -3,6 +3,7 @@ Imports System.Net.Sockets
 Imports System.Text
 Imports System.IO
 Imports System.Threading
+Imports System.Collections.Generic
 Imports Microsoft.VisualBasic.FileIO
 
 Module Program
@@ -37,7 +38,7 @@ Module Program
         ReadConfig()
     End Sub
     Private Function split_komma(ByVal str As String) As String
-        Dim ar As Array = str.Split(",")
+        Dim ar As String() = str.Split(","c)
         Return ar(ar.Length - 1)
     End Function
 
@@ -141,7 +142,7 @@ Module Program
         Try
             Dim fileContent As String = FileSystem.ReadAllText(FilePath)
             Dim configLine() As String = Split(fileContent, vbCrLf)
-            Dim configDict As Object = CreateObject("Scripting.Dictionary")
+            Dim configDict As New Dictionary(Of String, String)()
 
             For i As Integer = LBound(configLine) To UBound(configLine)
                 Dim keyValue() As String = Split(configLine(i), "=")
@@ -167,8 +168,9 @@ Module Program
         End Try
     End Sub
 
-    Private Sub RequireKey(configDict As Object, key As String)
-        If Not configDict.Exists(key) OrElse CStr(configDict(key)).Length = 0 Then
+    Private Sub RequireKey(configDict As Dictionary(Of String, String), key As String)
+        Dim value As String = Nothing
+        If Not configDict.TryGetValue(key, value) OrElse value.Length = 0 Then
             Throw New InvalidDataException($"Fehlender oder leerer Konfigurationswert: {key}")
         End If
     End Sub
