@@ -28,3 +28,6 @@ C:\Users\phil\GitHub\Orbit_Listener\obj\Debug\net8.0\refint\Orbit_Listener.dll
 C:\Users\phil\GitHub\Orbit_Listener\obj\Debug\net8.0\Orbit_Listener.pdb
 C:\Users\phil\GitHub\Orbit_Listener\obj\Debug\net8.0\Orbit_Listener.genruntimeconfig.cache
 C:\Users\phil\GitHub\Orbit_Listener\obj\Debug\net8.0\ref\Orbit_Listener.dll
+C:\GitHub\Orbit_Listener\bin\Debug\net8.0\config.txt
+C:\GitHub\Orbit_Listener\obj\Debug\net8.0\Orbit_Listener.Resources.resources
+C:\GitHub\Orbit_Listener\obj\Debug\net8.0\Orbit_Listener.vbproj.GenerateResource.cache

@@ -3,9 +3,6 @@ Imports System.Net.Sockets
 Imports System.Text
 Imports System.IO
 Imports System.Threading
-Imports System.Security.Cryptography
-Imports System.Runtime.InteropServices
-Imports System.Runtime.InteropServices.Marshalling
 Imports Microsoft.VisualBasic.FileIO
 
 Module Program
@@ -22,15 +19,18 @@ Module Program
 
     'TCP Variabeln
     Private TcpClientReceiverThread As New Threading.Thread(AddressOf ClientReceiverThread)
-    Private exiting As Boolean = True
+    Private running As Boolean = True
+    Private Const ReconnectDelayMs As Integer = 5000
+
+    'Logging
+    Private Const LogFilePath As String = ".\Orbit_Listener.log"
+    Private ReadOnly logLock As New Object()
+
     Sub Main(args As String())
         init()
         TcpClientReceiverThread.IsBackground = True
         TcpClientReceiverThread.Start()
-        'TCP Listener
-        Do While exiting
-
-        Loop
+        TcpClientReceiverThread.Join()
     End Sub
 
     Sub init()
@@ -40,103 +40,136 @@ Module Program
         Dim ar As Array = str.Split(",")
         Return ar(ar.Length - 1)
     End Function
-    Sub Loxonde_sender(ByVal strMessage As String)
-        Dim client As New UdpClient()
-        Dim ip As New IPEndPoint(loxoneIP, loxonePort)
+
+    Sub Log(ByVal message As String)
+        Dim line As String = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}"
+        Console.WriteLine(line)
         Try
-            Dim bytSent As Byte() = Encoding.ASCII.GetBytes(strMessage)
-            client.Send(bytSent, ip)
-            client.Close()
-
-        Catch e As Exception
-
-            Console.WriteLine(e.ToString())
+            SyncLock logLock
+                File.AppendAllText(LogFilePath, line & Environment.NewLine)
+            End SyncLock
+        Catch
+            'Ein fehlgeschlagenes Log-Schreiben darf das Programm nicht zum Absturz bringen
         End Try
     End Sub
-    Private Async Sub ClientReceiverThread()
+
+    Sub Loxonde_sender(ByVal strMessage As String)
         Try
-
-            Dim client As New TcpClient(orbitIP, orbitPort)
-
-            Dim data As Byte() = System.Text.Encoding.ASCII.GetBytes("conect")
-
-            Dim stream As NetworkStream = client.GetStream
-
-            stream.Write(data, 0, data.Length)
-
-            data = New Byte(256) {}
-
-            Dim responseData As String = String.Empty
-
-            Do While exiting
-
-                Dim bytes As Int32 = stream.Read(data, 0, data.Length)
-                responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes)
-
-                'Console.WriteLine(responseData)
-
-                If responseData.Contains("$F") Then
-                    Console.WriteLine("F {0}", responseData)
-                    Dim message As String = "status:" + split_komma(responseData)
-                    Console.WriteLine(message)
-                    Loxonde_sender(message)
-                    If message.Contains("Finish") Then
-                        Finish = True
-                    Else
-                        Finish = False
-                    End If
-                ElseIf responseData.Contains("$J") Then
-                    Console.WriteLine("J {0}", responseData)
-                    If Finish = True Then
-                        afterFinish += 1
-                        Dim message As String = "count: " & afterFinish
-                        Console.WriteLine(message)
-                        Loxonde_sender(message)
-                    End If
-                ElseIf responseData.Contains("$B") Then
-                    afterFinish = 0
-                    Finish = False
-                End If
-            Loop
-        Catch ex As Exception                               'If we get an exception at any point in the process (usually a connection lost or closed)
-        Finally
+            Using client As New UdpClient()
+                Dim ip As New IPEndPoint(loxoneIP, loxonePort)
+                Dim bytSent As Byte() = Encoding.ASCII.GetBytes(strMessage)
+                client.Send(bytSent, ip)
+            End Using
+        Catch e As Exception
+            Log(e.ToString())
         End Try
-        exiting = True
+    End Sub
+
+    ''' Verarbeitet eine einzelne, vollständige Nachricht (eine Zeile) vom Orbit-Server.
+    Private Sub ProcessMessage(ByVal responseData As String)
+        If responseData.Contains("$F") Then
+            Log($"F {responseData}")
+            Dim message As String = "status:" + split_komma(responseData)
+            Log(message)
+            Loxonde_sender(message)
+            Finish = message.Contains("Finish")
+        ElseIf responseData.Contains("$J") Then
+            Log($"J {responseData}")
+            If Finish Then
+                afterFinish += 1
+                Dim message As String = "count: " & afterFinish
+                Log(message)
+                Loxonde_sender(message)
+            End If
+        ElseIf responseData.Contains("$B") Then
+            afterFinish = 0
+            Finish = False
+        End If
+    End Sub
+
+    Private Sub ClientReceiverThread()
+        Do While running
+            Try
+                Using client As New TcpClient(orbitIP, orbitPort)
+                    Using stream As NetworkStream = client.GetStream()
+                        Log($"Verbunden mit Orbit {orbitIP}:{orbitPort}")
+
+                        Dim data As Byte() = Encoding.ASCII.GetBytes("conect")
+                        stream.Write(data, 0, data.Length)
+
+                        data = New Byte(256) {}
+
+                        'Puffer für Nachrichten, die sich über mehrere TCP-Reads erstrecken oder
+                        'zu mehreren pro Read eintreffen (TCP kennt keine Nachrichtengrenzen).
+                        Dim receiveBuffer As New StringBuilder()
+
+                        Do While running
+                            Dim bytes As Int32 = stream.Read(data, 0, data.Length)
+                            If bytes = 0 Then
+                                Throw New IOException("Verbindung wurde vom Orbit-Server geschlossen.")
+                            End If
+                            receiveBuffer.Append(Encoding.ASCII.GetString(data, 0, bytes))
+
+                            Dim lines() As String = receiveBuffer.ToString().Split(Chr(10))
+                            For i As Integer = 0 To lines.Length - 2
+                                Dim line As String = lines(i).Trim(Chr(13))
+                                If line.Length > 0 Then
+                                    ProcessMessage(line)
+                                End If
+                            Next
+
+                            'Der letzte Teil kann eine noch unvollständige Nachricht sein - im Puffer behalten
+                            receiveBuffer.Clear()
+                            receiveBuffer.Append(lines(lines.Length - 1))
+                        Loop
+                    End Using
+                End Using
+            Catch ex As Exception                               'Verbindung verloren oder Verbindungsaufbau fehlgeschlagen
+                Log($"Verbindung zu Orbit verloren: {ex.Message}")
+            End Try
+
+            If running Then
+                Log($"Erneuter Verbindungsversuch in {ReconnectDelayMs \ 1000} Sekunden...")
+                Thread.Sleep(ReconnectDelayMs)
+            End If
+        Loop
     End Sub
 
     Sub ReadConfig()
-        Dim FilePath As String
-        Dim fileContent As String
-        Dim configLine() As String
-        Dim configDict As Object
-        Dim i As Integer
+        Dim FilePath As String = ".\config.txt"
 
-        FilePath = ".\config.txt"
+        Try
+            Dim fileContent As String = FileSystem.ReadAllText(FilePath)
+            Dim configLine() As String = Split(fileContent, vbCrLf)
+            Dim configDict As Object = CreateObject("Scripting.Dictionary")
 
-        fileContent = FileSystem.ReadAllText(FilePath)
-        Console.WriteLine(FileSystem.GetFileInfo(FilePath))
+            For i As Integer = LBound(configLine) To UBound(configLine)
+                Dim keyValue() As String = Split(configLine(i), "=")
+                If UBound(keyValue) = 1 Then
+                    configDict(keyValue(0)) = keyValue(1)
+                End If
+            Next
 
-        FileClose(1)
+            RequireKey(configDict, "OrbitsIP")
+            RequireKey(configDict, "OrbitsPort")
+            RequireKey(configDict, "LoxoneIP")
+            RequireKey(configDict, "LoxonePort")
 
-        configLine = Split(fileContent, vbCrLf)
+            orbitIP = configDict("OrbitsIP")
+            orbitPort = Integer.Parse(configDict("OrbitsPort"))
+            loxoneIP = IPAddress.Parse(configDict("LoxoneIP"))
+            loxonePort = Integer.Parse(configDict("LoxonePort"))
 
-        configDict = CreateObject("Scripting.Dictionary")
+            Log($"Konfiguration geladen: Orbit={orbitIP}:{orbitPort}, Loxone={loxoneIP}:{loxonePort}")
+        Catch ex As Exception
+            Log($"Fehler beim Lesen von config.txt: {ex.Message}")
+            Environment.Exit(1)
+        End Try
+    End Sub
 
-        For i = LBound(configLine) To UBound(configLine)
-            Dim keyValue() As String
-            keyValue = Split(configLine(i), "=")
-            If UBound(keyValue) = 1 Then
-                configDict(keyValue(0)) = keyValue(1)
-            End If
-        Next
-
-        Console.WriteLine(configDict("OrbitsIP"))
-        orbitIP = configDict("OrbitsIP")
-        Console.WriteLine(configDict("OrbitsPort"))
-        orbitPort = configDict("OrbitsPort")
-        Console.WriteLine(configDict("LoxoneIP"))
-        loxoneIP = IPAddress.Parse(configDict("LoxoneIP"))
-        Console.WriteLine(configDict("LoxonePort"))
-        loxonePort = configDict("LoxonePort")
+    Private Sub RequireKey(configDict As Object, key As String)
+        If Not configDict.Exists(key) OrElse CStr(configDict(key)).Length = 0 Then
+            Throw New InvalidDataException($"Fehlender oder leerer Konfigurationswert: {key}")
+        End If
     End Sub
 End Module
